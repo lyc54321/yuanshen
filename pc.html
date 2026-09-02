@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <title>我的名片</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            outline: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: #409eff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+        }
+
+        .big_box {
+            width: 400px;
+            text-align: center;
+            background: #fff;
+            border-radius: 30px;
+            box-shadow: 10px 10px 10px rgba(0,0,0,0.2);
+            padding: 20px;
+            height: 250px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .left_box {
+            width: 120px;
+            height: 100%;
+            border: 1px solid #000000;
+            border-radius: 10px;
+            padding: 12px 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            transition: box-shadow 0.2s;
+            position: relative;
+        }
+        .left_box:hover {
+            box-shadow: 10px 10px 10px rgba(0,0,0,0.2);
+        }
+
+        .avatar-circle {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            overflow: hidden;
+        }
+        .avatar-circle img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .left_box h3 {
+            font-size: 17px;
+        }
+        .left_box p {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .icon-group {
+            display: flex;
+            gap: 10px;
+        }
+        .icon-circle {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: #eee;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+            transition: box-shadow 0.2s ease;
+        }
+        .icon-circle:hover {
+            box-shadow: 0 2px 6px rgba(0,0,0,0.22);
+        }
+
+        .more-popup {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 120px;
+            background: #ffffff;
+            border: 1px solid #000000;
+            border-radius: 10px;
+            padding: 12px 8px;
+            visibility: hidden;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: 0.24s ease-out;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            -webkit-tap-highlight-color: transparent;
+        }
+        .more-popup.show {
+            visibility: visible;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .popup-row {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            margin: 4px 0;
+        }
+        .more-popup-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: #eee;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+            transition: box-shadow 0.2s ease;
+        }
+        .more-popup-icon:hover {
+            box-shadow: 0 2px 6px rgba(0,0,0,0.22);
+        }
+
+        .right_wrap {
+            width: 230px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .right_top_bar {
+            width: 100%;
+            height: 20px;
+            border: 1px solid #000000;
+            border-radius: 10px;
+            position: relative;
+            transition: box-shadow 0.2s;
+            display: flex;
+            gap: 6px;
+            justify-content: flex-end;
+            align-items: center;
+            padding: 0 6px;
+        }
+        .right_top_bar:hover {
+            box-shadow: 10px 10px 10px rgba(0,0,0,0.2);
+        }
+
+        .expand-btn {
+            height: 11px;
+            background: #eee;
+            border-radius: 5.5px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 11px;
+            overflow: hidden;
+            white-space: nowrap;
+            padding: 0 3px;
+            gap: 3px;
+            border: none;
+            color: inherit;
+            font: inherit;
+            background-clip: padding-box;
+            -webkit-tap-highlight-color: transparent;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+        }
+        .expand-btn:hover {
+            width: 57px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.22);
+        }
+        .expand-btn .icon {
+            flex: 0 0 9px;
+            width: 9px;
+            height: 9px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .expand-btn .text {
+            font-size: 7.5px;
+            color: #777;
+        }
+
+        .right_box {
+            flex: 1;
+            border: 1px solid #000000;
+            border-radius: 10px;
+            padding: 6px 8px;
+            transition: box-shadow 0.2s;
+        }
+        .right_box:hover {
+            box-shadow: 10px 10px 10px rgba(0,0,0,0.2);
+        }
+        .info_line {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 0;
+            flex-wrap: nowrap;
+        }
+        .info_line p {
+            font-size: 12px;
+            color: #333;
+            white-space: nowrap;
+        }
+        .mini_circle_btn {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: #eee;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+            transition: box-shadow 0.2s ease;
+            flex-shrink: 0;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+        }
+        .mini_circle_btn:hover {
+            box-shadow: 0 2px 6px rgba(0,0,0,0.22);
+        }
+
+        .wx_mask,
+        .qq_mask {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: transparent;
+            z-index: 999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            visibility: hidden;
+            transition: visibility 0.3s;
+        }
+        .wx_mask.show,
+        .qq_mask.show {
+            visibility: visible;
+        }
+
+        .pop_box {
+            background: #fff;
+            padding: 20px;
+            border-radius: 30px;
+            box-shadow: 10px 10px 10px rgba(0,0,0,0.2);
+            text-align: center;
+            opacity: 0;
+            filter: blur(10px);
+            transform: scale(0.96);
+            transition: opacity 0.3s ease,
+                        filter 0.3s ease,
+                        transform 0.3s ease;
+        }
+        .wx_mask.show .pop_box,
+        .qq_mask.show .pop_box {
+            opacity: 1;
+            filter: blur(0);
+            transform: scale(1);
+        }
+
+        .pop_qrcode {
+            width: 180px;
+            height: 180px;
+            margin-bottom: 10px;
+            overflow: hidden;
+        }
+        .pop_qrcode img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .pop_box p {
+            font-size: 13px;
+            color: #444;
+            margin-bottom: 12px;
+        }
+
+        .copy-action-btn {
+            display: block;
+            width: 180px;
+            height: 36px;
+            margin: 0 auto;
+            padding: 0;
+            border: none;
+            background: #eee;
+            color: #000;
+            border-radius: 10px;
+            cursor: pointer;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            transition: box-shadow 0.2s ease;
+        }
+        .copy-action-btn:hover {
+            box-shadow: 0 2px 6px rgba(0,0,0,0.22);
+        }
+    </style>
+</head>
+<body>
+    <div class="big_box">
+        <div class="left_box">
+            <div class="avatar-circle">
+                <img src="avatar.png" alt="头像">
+            </div>
+            <h3>李羿宸</h3>
+            <p>一只免免呀</p>
+            <div class="icon-group">
+                <div class="icon-circle" id="wxBtn">
+<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+  <path d="M16.5 10c3.038 0 5.5 2.015 5.5 4.5c0 1.397 -.778 2.645 -2 3.47l0 2.03l-1.964 -1.178a6.649 6.649 0 0 1 -1.536 .178c-3.038 0 -5.5 -2.015 -5.5 -4.5s2.462 -4.5 5.5 -4.5" />
+  <path d="M11.197 15.698c-.69 .196 -1.43 .302 -2.197 .302a8.008 8.008 0 0 1 -2.612 -.432l-2.388 1.432v-2.801c-1.237 -1.082 -2 -2.564 -2 -4.199c0 -3.314 3.134 -6 7 -6c3.782 0 6.863 2.57 7 5.785l0 .233" />
+  <path d="M10 8h.01" />
+  <path d="M7 8h.01" />
+  <path d="M15 14h.01" />
+  <path d="M18 14h.01" />
+</svg>
+                </div>
+                <div class="icon-circle" id="qqBtn">
+<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+  <path d="M6 9.748a14.716 14.716 0 0 0 11.995 -.052c.275 -9.236 -11.104 -11.256 -11.995 .052" />
+  <path d="M18 10c.984 2.762 1.949 4.765 2 7.153c.014 .688 -.664 1.346 -1.184 .303c-.346 -.696 -.952 -1.181 -1.816 -1.456" />
+  <path d="M17 16c.031 1.831 .147 3.102 -1 4" />
+  <path d="M8 20c-1.099 -.87 -.914 -2.24 -1 -4" />
+  <path d="M6 10c-.783 2.338 -1.742 4.12 -1.968 6.43c-.217 2.227 .716 1.644 1.16 .917c.296 -.487 .898 -.934 1.808 -1.347" />
+  <path d="M15.898 13l-.476 -2" />
+  <path d="M8 20l-1.5 1c-.5 .5 -.5 1 .5 1h10c1 0 1 -.5 .5 -1l-1.5 -1" />
+  <path d="M12.75 7a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" />
+  <path d="M9.25 7a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" />
+</svg>
+                </div>
+                <div class="icon-circle" id="openMore">∷</div>
+            </div>
+
+            <div class="more-popup" id="moreBox">
+                <div class="popup-row">
+                    <div class="more-popup-icon">
+<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+  <path d="M16.5 10c3.038 0 5.5 2.015 5.5 4.5c0 1.397 -.778 2.645 -2 3.47l0 2.03l-1.964 -1.178a6.649 6.649 0 0 1 -1.536 .178c-3.038 0 -5.5 -2.015 -5.5 -4.5s2.462 -4.5 5.5 -4.5" />
+  <path d="M11.197 15.698c-.69 .196 -1.43 .302 -2.197 .302a8.008 8.008 0 0 1 -2.612 -.432l-2.388 1.432v-2.801c-1.237 -1.082 -2 -2.564 -2 -4.199c0 -3.314 3.134 -6 7 -6c3.782 0 6.863 2.57 7 5.785l0 .233" />
+  <path d="M10 8h.01" />
+  <path d="M7 8h.01" />
+  <path d="M15 14h.01" />
+  <path d="M18 14h.01" />
+</svg>
+                    </div>
+                    <div class="more-popup-icon">
+<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+  <path d="M6 9.748a14.716 14.716 0 0 0 11.995 -.052c.275 -9.236 -11.104 -11.256 -11.995 .052" />
+  <path d="M18 10c.984 2.762 1.949 4.765 2 7.153c.014 .688 -.664 1.346 -1.184 .303c-.346 -.696 -.952 -1.181 -1.816 -1.456" />
+  <path d="M17 16c.031 1.831 .147 3.102 -1 4" />
+  <path d="M8 20c-1.099 -.87 -.914 -2.24 -1 -4" />
+  <path d="M6 10c-.783 2.338 -1.742 4.12 -1.968 6.43c-.217 2.227 .716 1.644 1.16 .917c.296 -.487 .898 -.934 1.808 -1.347" />
+  <path d="M15.898 13l-.476 -2" />
+  <path d="M8 20l-1.5 1c-.5 .5 -.5 1 .5 1h10c1 0 1 -.5 .5 -1l-1.5 -1" />
+  <path d="M12.75 7a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" />
+  <path d="M9.25 7a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" />
+</svg>
+                    </div>
+                    <div class="more-popup-icon">
+<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+  <path d="M21 7.917v4.034a9.948 9.948 0 0 1 -5 -1.951v4.5a6.5 6.5 0 1 1 -8 -6.326v4.326a2.5 2.5 0 1 0 4 2v-11.5h4.083a6.005 6.005 0 0 0 4.917 4.917" />
+</svg>
+                    </div>
+                </div>
+                <div class="popup-row">
+                    <div class="more-popup-icon">📕</div>
+                    <div class="more-popup-icon">
+<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+  <path d="M5 4h4l2 5l-2.5 1.5a11 11 0 0 0 5 5l1.5 -2.5l5 2v4a2 2 0 0 1 -2 2a16 16 0 0 1 -15 -15a2 2 0 0 1 2 -2" />
+</svg>
+                    </div>
+                    <div class="more-popup-icon" id="closeMore">×</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="right_wrap">
+            <div class="right_top_bar">
+                <div class="expand-btn download-btn">
+                    <div class="icon">
+<svg xmlns="http://www.w3.org/2000/svg" width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+  <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2" />
+  <path d="M7 11l5 5l5 -5" />
+  <path d="M12 4l0 12" />
+</svg>
+                    </div>
+                    <span class="text">下载</span>
+                </div>
+                <div class="expand-btn share-btn">
+                    <div class="icon">
+<svg xmlns="http://www.w3.org/2000/svg" width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+  <path d="M12 6h-6a2 2 0 0 0 -2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-6" />
+  <path d="M11 13l9 -9" />
+  <path d="M15 4h5v5" />
+</svg>
+                    </div>
+                    <span class="text">分享</span>
+                </div>
+            </div>
+            <div class="right_box">
+                <div class="info_line">
+                    <p>电话:13768789310</p>
+                    <div class="mini_circle_btn" id="phoneBtn">
+<svg xmlns="http://www.w3.org/2000/svg" width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+  <path d="M5 4h4l2 5l-2.5 1.5a11 11 0 0 0 5 5l1.5 -2.5l5 2v4a2 2 0 0 1 -2 2a16 16 0 0 1 -15 -15a2 2 0 0 1 2 -2" />
+</svg>
+                    </div>
+                    <div class="mini_circle_btn" id="copyPhoneBtn">
+<svg xmlns="http://www.w3.org/2000/svg" width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+  <path d="M7 9.667a2.667 2.667 0 0 1 2.667 -2.667h8.666a2.667 2.667 0 0 1 2.667 2.667v8.666a2.667 2.667 0 0 1 -2.667 2.667h-8.666a2.667 2.667 0 0 1 -2.667 -2.667l0 -8.666" />
+  <path d="M4.012 16.737a2.005 2.005 0 0 1 -1.012 -1.737v-10c0 -1.1 .9 -2 2 -2h10c.75 0 1.158 .385 1.5 1" />
+</svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="wx_mask" id="wxMask">
+        <div class="pop_box">
+            <div class="pop_qrcode">
+                <img src="qrcode-wechat.png" alt="微信二维码">
+            </div>
+            <p id="wxTip"></p>
+            <button class="copy-action-btn" id="copyWxBtn">复制微信号</button>
+        </div>
+    </div>
+
+    <div class="qq_mask" id="qqMask">
+        <div class="pop_box">
+            <div class="pop_qrcode">
+                <img src="qrcode-qq.png" alt="QQ二维码">
+            </div>
+            <p id="qqTip"></p>
+            <button class="copy-action-btn" id="copyQqBtn">复制QQ号</button>
+        </div>
+    </div>
+
+    <script>
+        const openMore = document.getElementById('openMore');
+        const moreBox = document.getElementById('moreBox');
+        const closeMore = document.getElementById('closeMore');
+
+        openMore.addEventListener('click', function(e){
+            e.stopPropagation();
+            moreBox.classList.add('show');
+        });
+        closeMore.addEventListener('click', function(e){
+            e.stopPropagation();
+            moreBox.classList.remove('show');
+        });
+        document.addEventListener('click', function(){
+            moreBox.classList.remove('show');
+        });
+        moreBox.addEventListener('click', function(e){
+            e.stopPropagation();
+        });
+
+        function isWechatBrowser(){
+            const ua = navigator.userAgent.toLowerCase();
+            return ua.match(/micromessenger/) !== null;
+        }
+        function isQQBrowser(){
+            const ua = navigator.userAgent.toLowerCase();
+            return ua.match(/qq/) !== null;
+        }
+
+        const wxNumber = "13768789310";
+        const qqNumber = "1809217529";
+        const phoneNumber = "13768789310";
+
+        async function copyText(text){
+            try{
+                await navigator.clipboard.writeText(text);
+            }catch(err){
+                const ta = document.createElement('textarea');
+                ta.value = text;
+                document.body.appendChild(ta);
+                ta.select();
+                document.execCommand('copy');
+                document.body.removeChild(ta);
+            }
+        }
+
+        const wxBtn = document.getElementById('wxBtn');
+        const wxMask = document.getElementById('wxMask');
+        const wxTip = document.getElementById('wxTip');
+        const copyWxBtn = document.getElementById('copyWxBtn');
+
+        wxBtn.addEventListener('click', function(){
+            if(isWechatBrowser()){
+                wxTip.innerText = "长按识别二维码,加我微信";
+            }else{
+                wxTip.innerText = "长按识别二维码或保存图片";
+            }
+            wxMask.classList.add('show');
+        });
+        wxMask.addEventListener('click', function(e){
+            if(e.target === wxMask){
+                wxMask.classList.remove('show');
+            }
+        });
+        copyWxBtn.addEventListener('click', () => {
+            copyText(wxNumber);
+        });
+
+        const qqBtn = document.getElementById('qqBtn');
+        const qqMask = document.getElementById('qqMask');
+        const qqTip = document.getElementById('qqTip');
+        const copyQqBtn = document.getElementById('copyQqBtn');
+
+        qqBtn.addEventListener('click', function(){
+            if(isQQBrowser()){
+                qqTip.innerText = "长按识别二维码,加我QQ";
+            }else{
+                qqTip.innerText = "长按识别二维码或保存图片";
+            }
+            qqMask.classList.add('show');
+        });
+        qqMask.addEventListener('click', function(e){
+            if(e.target === qqMask){
+                qqMask.classList.remove('show');
+            }
+        });
+        copyQqBtn.addEventListener('click', () => {
+            copyText(qqNumber);
+        });
+
+        const phoneBtn = document.getElementById('phoneBtn');
+        const copyPhoneBtn = document.getElementById('copyPhoneBtn');
+        phoneBtn.addEventListener('click',()=>{
+            window.location.href = "tel:"+phoneNumber;
+        });
+        copyPhoneBtn.addEventListener('click',()=>{
+            copyText(phoneNumber);
+        });
+    </script>
+</body>
+</html>
